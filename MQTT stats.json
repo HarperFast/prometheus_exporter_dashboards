@@ -27,13 +27,19 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.1.4"
+      "version": "12.0.1+security-01"
     },
     {
       "type": "datasource",
       "id": "prometheus",
       "name": "Prometheus",
       "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
     },
     {
       "type": "panel",
@@ -83,6 +89,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -113,8 +120,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -140,10 +146,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -152,7 +160,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(action) (bytes_received{job=\"harperdb\", protocol=\"mqtt\"})",
+          "expr": "sum by(instance, action) (bytes_received{job=~\"$jobs\", protocol=\"mqtt\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -164,6 +172,129 @@
       ],
       "title": "Bytes received",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Total consumption for the selected period",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Totals harperdb"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Production Total Data"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Totals harperdbStage"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Stage Total Data"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.1+security-01",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(job) (increase(bytes_received{job=~\"$jobs\"}[$__range]))",
+          "fullMetaSearch": false,
+          "hide": true,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(job) (increase(bytes_sent{job=~\"$jobs\"}[$__range]))",
+          "fullMetaSearch": false,
+          "hide": true,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "${DS_EXPRESSION}"
+          },
+          "expression": "$A + $B",
+          "hide": false,
+          "refId": "Totals",
+          "type": "math"
+        }
+      ],
+      "title": "Data Consumption Total",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -183,6 +314,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -213,8 +345,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -240,10 +371,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -252,7 +385,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(action) (messages_received{job=\"harperdb\", protocol=\"mqtt\"})",
+          "expr": "sum by(action, instance) (messages_received{job=~\"harperdb|$jobs\", protocol=\"mqtt\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -283,6 +416,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -313,8 +447,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -340,10 +473,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -351,8 +486,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(action) (messages_sent{job=\"harperdb\", protocol=\"mqtt\"})",
+          "editorMode": "code",
+          "expr": "sum by(instance, action, topic) (messages_sent{job=~\"$jobs\", protocol=\"mqtt\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -383,6 +518,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -413,8 +549,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -440,10 +575,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -452,7 +589,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(action) (bytes_sent{protocol=\"mqtt\", job=\"harperdb\", action=\"publish,qos=1\"})",
+          "expr": "sum by(action, instance, topic) (bytes_sent{protocol=\"mqtt\", job=~\"$jobs\", action=~\"publish|qos=1\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -468,7 +605,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "sum by(action) (bytes_received{protocol=\"mqtt\", job=\"harperdb\", action=\"puback\"})",
+          "expr": "sum by(action) (bytes_received{protocol=\"mqtt\", job=~\"$jobs\", action=\"puback\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -500,6 +637,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -530,8 +668,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -557,10 +694,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -568,8 +707,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(action) (connection{job=\"harperdb\", type=\"success\"})",
+          "editorMode": "code",
+          "expr": "sum by(instance, action, type) (connection{job=~\"$jobs\", instance=~\"$instances\", type=\"success\"})",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -600,6 +739,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -630,8 +770,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -657,10 +796,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -668,8 +809,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(action) (bytes_sent{job=\"harperdb\", protocol=\"mqtt\"})",
+          "editorMode": "code",
+          "expr": "sum by(instance, action) (bytes_sent{job=~\"$jobs\", protocol=\"mqtt\", instance=~\"$instances\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -711,6 +852,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -748,34 +890,10 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "bytes"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "C connack"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 8,
@@ -792,10 +910,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -803,8 +923,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(action) (bytes_sent{job=\"harperdb\", protocol=\"mqtt\"})",
+          "editorMode": "code",
+          "expr": "sum by(instance, action) (bytes_sent{job=~\"$jobs\", protocol=\"mqtt\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -820,8 +940,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(action) (messages_sent{job=\"harperdb\", protocol=\"mqtt\"})",
+          "editorMode": "code",
+          "expr": "sum by(instance, action) (messages_sent{job=~\"$jobs\", protocol=\"mqtt\", instance=~\"$instances\", topic=~\"$Topic\"})",
           "fullMetaSearch": false,
           "hide": true,
           "includeNullMetadata": true,
@@ -839,7 +959,7 @@
           "expression": "$A / $B",
           "hide": false,
           "reducer": "sum",
-          "refId": "C",
+          "refId": "action",
           "type": "math"
         }
       ],
@@ -848,7 +968,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 39,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
@@ -858,9 +978,8 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(job)",
+        "definition": "label_values({job=~\"harper.*\"},job)",
         "description": "Select the prometheus job(s) to filter the dashboard on.",
-        "hide": 0,
         "includeAll": true,
         "label": "Job(s)",
         "multi": true,
@@ -868,13 +987,11 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(job)",
+          "query": "label_values({job=~\"harper.*\"},job)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
@@ -883,9 +1000,8 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values({job=\"$jobs\"},instance)",
+        "definition": "label_values({job=~\"$jobs\"},instance)",
         "description": "Select the instance(s) to filter the dashboard on.",
-        "hide": 0,
         "includeAll": true,
         "label": "instance(s)",
         "multi": true,
@@ -893,17 +1009,14 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values({job=\"$jobs\"},instance)",
+          "query": "label_values({job=~\"$jobs\"},instance)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
-        "allValue": "",
         "current": {},
         "datasource": {
           "type": "prometheus",
@@ -923,8 +1036,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       }
     ]
@@ -935,8 +1046,8 @@
   },
   "timepicker": {},
   "timezone": "utc",
-  "title": "MQTT stats",
-  "uid": "adnzv4csjjdvka",
-  "version": 6,
+  "title": "MQTT stats-2",
+  "uid": "adnzv4csjjdvka2",
+  "version": 18,
   "weekStart": ""
 }
