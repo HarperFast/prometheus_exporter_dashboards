@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> **This repository is archived and read-only.**
+>
+> It is pinned to **HarperDB v4** and is preserved for reference.
+> It is **not** kept in sync with current releases and may not be supported in latest Harper versions.
+>
+> For up-to-date guides and reference docs, see the [Harper docs](https://docs.harper.fast) and join our [Discord](https://harper.fast/discord).
+
 # HarperDB Sample Grafana Dashboards
 This repository is a collection of sample HarperDB Grafana dashboards. We intend to grow this collection overtime with additional monitoring dashboards and examples for specific use cases.
 
